@@ -4,6 +4,8 @@ import {
   JupyterFrontEndPlugin
 } from '@jupyterlab/application';
 
+import { IMainMenu } from '@jupyterlab/mainmenu';
+
 import { ICommandPalette, MainAreaWidget, WidgetTracker } from '@jupyterlab/apputils';
 
 import { Widget } from '@lumino/widgets';
@@ -92,7 +94,7 @@ class APODWidget extends Widget {
 /**
 * Activate the APOD widget extension.
 */
-function activate(app: JupyterFrontEnd, palette: ICommandPalette, restorer: ILayoutRestorer) {
+function activate(app: JupyterFrontEnd, palette: ICommandPalette, restorer: ILayoutRestorer, mainMenu: IMainMenu) {
   console.log('JupyterLab extension jupyterlab_apod is activated!');
 
   // Declare a widget variable
@@ -130,6 +132,14 @@ function activate(app: JupyterFrontEnd, palette: ICommandPalette, restorer: ILay
   // Add the command to the palette.
   palette.addItem({ command, category: 'Tutorial' });
 
+  // const menu = new Menu({ commands: app.commands });
+  // menu.addItem({ command, type: 'command' });
+
+  mainMenu.fileMenu.addGroup([{
+    command,
+    type: 'command'
+  }]);
+
   // Track and restore the widget state
   let tracker = new WidgetTracker<MainAreaWidget<APODWidget>>({
     namespace: 'apod'
@@ -143,7 +153,7 @@ function activate(app: JupyterFrontEnd, palette: ICommandPalette, restorer: ILay
 const extension: JupyterFrontEndPlugin<void> = {
   id: 'syextension:plugin',
   autoStart: true,
-  requires: [ICommandPalette, ILayoutRestorer],
+  requires: [ICommandPalette, ILayoutRestorer, IMainMenu],
   activate: activate
 };
 
