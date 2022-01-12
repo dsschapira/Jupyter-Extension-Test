@@ -2,40 +2,58 @@ import {
   JupyterFrontEnd,
   JupyterFrontEndPlugin,
 } from '@jupyterlab/application';
-
-import { showDialog, Dialog } from '@jupyterlab/apputils';
-
-import { ILauncher } from '@jupyterlab/launcher';
-
-import { reactIcon } from '@jupyterlab/ui-components';
-
 import { IFileBrowserFactory } from '@jupyterlab/filebrowser';
+import { ICommandPalette, MainAreaWidget, showDialog, Dialog } from '@jupyterlab/apputils';
+import { ILauncher } from '@jupyterlab/launcher';
+import { runIcon, reactIcon } from '@jupyterlab/ui-components';
+import { DogViewerWidget } from './widget';
 
-/**
- * Initialization data for the react-widget extension.
- */
+const commandId = "example-menu";
+const open_widget_command = "syapse-widget";
 const extension: JupyterFrontEndPlugin<void> = {
-  id: 'context_menu',
+  id: commandId,
   autoStart: true,
-  optional: [ILauncher, IFileBrowserFactory],
-  activate: (app: JupyterFrontEnd, factory: IFileBrowserFactory) => {
-    const { commands } = app;
+  requires: [IFileBrowserFactory, ICommandPalette, ILauncher],
+  activate: (app: JupyterFrontEnd, factory: IFileBrowserFactory, palette: ICommandPalette, launcher: ILauncher) => {
 
-     commands.addCommand("context_menu:open", {
-       label: 'Share Notebook',
-       caption: 'Share this notebook within your organization',
-       icon: reactIcon,
-       execute: () => {
-         const file = factory.tracker.currentWidget?.selectedItems().next();
+    app.commands.addCommand(commandId, {
+      label: 'Get Dogs!',
+      caption: "Example context menu button for file browser's items.",
+      icon: runIcon,
+      execute: () => {
+        // Gets the file object if we have selected a file
+        const file = factory?.tracker?.currentWidget?.selectedItems().next();
 
-         showDialog({
-           title: file?.name,
-           body: 'Share' + file?.path,
-           buttons: [Dialog.okButton()],
-         }).catch((e) => console.log(e));
-       },
-     });
+        showDialog({
+          title: file?.name,
+          body: new DogViewerWidget(),
+          buttons: [Dialog.okButton()],
+        }).catch((e) => console.log(e));
+      },
+    });
 
+    app.commands.addCommand(open_widget_command, {
+      label: "Get Page For Dogs!",
+      caption: "Get dogs, but in a new widget!",
+      icon: reactIcon,
+      execute: () => {
+        const content = new DogViewerWidget();
+        const widget = new MainAreaWidget<DogViewerWidget>({content});
+
+        widget.title.label = "Syapse Dog Viewer";
+        widget.title.icon = reactIcon;
+        widget.toggleClass("syapse-dog-viewer", true);
+        app.shell.add(widget, 'main');
+      }
+    });
+
+    // Add command to command pallete
+    const commandName = "example";
+    palette.addItem({command: commandId, category: commandName, args: { origin: 'from palette' }});
+
+    if (launcher) {
+      launcher.add({command: open_widget_command})
+    }
   },
 };
 
