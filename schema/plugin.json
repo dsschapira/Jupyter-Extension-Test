@@ -4,12 +4,23 @@
     "jupyter.lab.menus": {
       "context": [
         {
-          "command": "context_menu:open",
-          "selector": ".jp-DirListing-item[data-file-type=\"text\"]",
+          "command": "example-menu",
+          "selector": ".jp-DirListing-item[data-file-type=\"notebook\"]",
           "rank": 0
+        }
+      ],
+      "main": [
+        {
+            "id": "jp-mainmenu-file",
+            "items": [
+                {
+                    "command": "example-menu",
+                    "rank": 0
+                }
+            ]
         }
       ]
     },
     "additionalProperties": false,
     "type": "object"
-  }
+}
