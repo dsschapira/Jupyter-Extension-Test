@@ -1,35 +1,44 @@
 import { ReactWidget } from '@jupyterlab/apputils';
-
 import React, { useState } from 'react';
 
+
+const getDogImage = async (setter: CallableFunction) => {
+    const resp = await fetch("https://dog.ceo/api/breeds/image/random");
+    if (resp.status === 200) {
+        const data = await resp.json();
+        setter(data.message);
+    }
+};
 /**
  * React component for a counter.
  *
  * @returns The React component
  */
-const CounterComponent = (): JSX.Element => {
-  const [counter, setCounter] = useState(0);
+const DogViewerComponent = (): JSX.Element => {
+  const [dogImg, setDogImg] = useState("");
 
   return (
     <div>
-      <p>You clicked {counter} times!</p>
       <button
         onClick={(): void => {
-          setCounter(counter + 1);
+          getDogImage(setDogImg);
         }}
       >
-        Increment
+        Get A Dog Picture!
       </button>
+      <div className="dog-image-container">
+        <img src={dogImg} />
+      </div>
     </div>
   );
 };
 
 /**
- * A Counter Lumino Widget that wraps a CounterComponent.
+ * A Counter Lumino Widget that wraps a DogViewerComponent.
  */
-export class CounterWidget extends ReactWidget {
+export class DogViewerWidget extends ReactWidget {
   /**
-   * Constructs a new CounterWidget.
+   * Constructs a new DogViewerWidget.
    */
   constructor() {
     super();
@@ -37,6 +46,6 @@ export class CounterWidget extends ReactWidget {
   }
 
   render(): JSX.Element {
-    return <CounterComponent />;
+    return <DogViewerComponent />;
   }
 }

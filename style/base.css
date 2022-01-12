@@ -7,3 +7,16 @@
     justify-content: center;
     text-align: center;
   }
+
+.dog-image-container {
+    display: flex;
+    flex-direction: column;
+}
+
+.dog-image-container img {
+    max-height: 250px;
+}
+
+.syapse-dog-viewer .dog-image-container > img {
+    max-height: 625px;
+}
